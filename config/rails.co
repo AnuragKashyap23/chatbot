@@ -1,0 +1,104 @@
+# ── User intent canonical forms ──
+# NeMo uses these to classify user messages via embeddings + LLM
+
+define user express greeting
+  "hello"
+  "hi"
+  "hey"
+  "good morning"
+  "good afternoon"
+  "good evening"
+  "namaste"
+  "namaskar"
+
+define user ask for help
+  "can you help me"
+  "i need help"
+  "help me please"
+
+define user ask general question
+  "what is"
+  "how does"
+  "tell me about"
+  "explain"
+
+# ── Bot response canonical forms ──
+
+define bot express greeting
+  "Hello! How can I help you?"
+
+define bot provide help
+  "Type any sentence and I'll correct the grammar or translate it."
+
+# ── Bot responses for blocked messages ──
+# These are returned when an input rail triggers 'stop'
+
+define bot inform cannot use abusive words
+  "I'm sorry, but I detected abusive or offensive language in your message. Please refrain from using such words. I'm here to help you in a respectful and constructive manner. Could you please rephrase your message?"
+
+define bot inform llm detected abusive words
+  "inappropriate words"
+
+define bot inform prompt injection detected
+  "I'm sorry, but your message appears to contain an attempt to manipulate my instructions. I cannot process this request. Please ask me a genuine question and I'll be happy to help!"
+
+define bot inform llm detected prompt injection
+  "Your message was flagged as an attempt to manipulate my instructions, even though it may not look like a direct attack. I cannot process this request. Please ask a genuine question."
+
+define bot inform sql injection detected
+  "I'm sorry, but your message appears to contain potentially harmful code or SQL injection patterns. I cannot process this request for security reasons. Please rephrase your message as a normal question."
+
+define bot inform llm detected sql injection
+  "Your message was flagged as containing a potential database attack pattern. I cannot process this request for security reasons. Please rephrase your message normally."
+
+# ── Input Rail Subflows ──
+# These are the actual guardrails executed by NeMo BEFORE the LLM.
+# 'execute' calls the @action Python functions in actions.py.
+# 'stop' prevents the message from reaching the LLM.
+
+define subflow check abusive language
+  $is_abusive = execute check_abusive_words
+  if $is_abusive
+    bot inform cannot use abusive words
+    stop
+
+define subflow check abusive language llm
+  $is_abusive_llm = execute check_abusive_llm
+  if $is_abusive_llm
+    bot inform llm detected abusive words
+    stop
+
+define subflow check prompt injection
+  $is_injection = execute check_prompt_injection
+  if $is_injection
+    bot inform prompt injection detected
+    stop
+
+define subflow check prompt injection llm
+  $is_injection_llm = execute check_prompt_injection_llm
+  if $is_injection_llm
+    bot inform llm detected prompt injection
+    stop
+
+define subflow check sql injection
+  $is_sql_injection = execute check_sql_injection
+  if $is_sql_injection
+    bot inform sql injection detected
+    stop
+
+define subflow check sql injection llm
+  $is_sql_injection_llm = execute check_sql_injection_llm
+  if $is_sql_injection_llm
+    bot inform llm detected sql injection
+    stop
+
+# ── Dialog flows ──
+# Standard conversation patterns
+
+define flow greeting
+  user express greeting
+  bot express greeting
+
+define flow help
+  user ask for help
+  bot provide help

@@ -1,0 +1,48 @@
+colang_version: "1.0"
+
+models:
+  - type: main
+    engine: ollama
+    model: mistral
+    parameters:
+      base_url: http://localhost:11434
+
+instructions:
+  - type: general
+    content: |
+      You are a text rewriter. Your ONLY job is to rewrite the user's input in proper, grammatically correct English. Follow these rules strictly:
+
+      - Output ONLY the rewritten sentence. Nothing else. No explanations, no greetings, no extra words.
+      - If the input is already correct English, output it as-is with proper punctuation and capitalization.
+      - If the input is in Hindi (Devanagari or transliterated), translate it to English and output only the translation.
+      - Do NOT answer questions. Do NOT provide information. Just rewrite/translate the text.
+      - Keep the output under 50 tokens unless the input itself exceeds 50 tokens.
+
+      Examples:
+      Input: "i has went to store yesterday" → Output: "I went to the store yesterday."
+      Input: "what is the weather today" → Output: "What is the weather today?"
+      Input: "mujhe mausam ke baare mein batao" → Output: "Tell me about the weather."
+      Input: "she dont like apple" → Output: "She doesn't like apples."
+
+# Input rails run BEFORE the message reaches the LLM.
+# Each flow name maps to a 'define subflow' in rails.co.
+# Inside those subflows, 'execute' calls the @action functions in actions.py.
+rails:
+  input:
+    flows:
+      - check abusive language
+      - check abusive language llm
+      - check prompt injection
+      - check prompt injection llm
+      - check sql injection
+      - check sql injection llm
+
+sample_conversation: |
+  user "i has went to store yesterday"
+    request rewrite
+  bot provide rewrite
+    "I went to the store yesterday."
+  user "she dont like apple"
+    request rewrite
+  bot provide rewrite
+    "She doesn't like apples."
