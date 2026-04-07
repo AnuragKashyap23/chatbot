@@ -1,35 +1,3 @@
-# ── User intent canonical forms ──
-# NeMo uses these to classify user messages via embeddings + LLM
-
-define user express greeting
-  "hello"
-  "hi"
-  "hey"
-  "good morning"
-  "good afternoon"
-  "good evening"
-  "namaste"
-  "namaskar"
-
-define user ask for help
-  "can you help me"
-  "i need help"
-  "help me please"
-
-define user ask general question
-  "what is"
-  "how does"
-  "tell me about"
-  "explain"
-
-# ── Bot response canonical forms ──
-
-define bot express greeting
-  "Hello! How can I help you?"
-
-define bot provide help
-  "Type any sentence and I'll correct the grammar or translate it."
-
 # ── Bot responses for blocked messages ──
 # These are returned when an input rail triggers 'stop'
 
