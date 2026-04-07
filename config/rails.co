@@ -86,6 +86,20 @@ define subflow check all threats llm
     bot inform llm detected sql injection
     stop
 
+# ── Safe passage signal ──
+# This is the LAST input rail. If all previous rails passed without
+# stopping, this subflow fires and returns a known signal string.
+# app.py checks for this signal to know the message is safe,
+# then streams the rewrite directly from Ollama (bypassing NeMo's
+# intent classification and LLM generation for speed + streaming).
+
+define bot signal input passed
+  "GUARDRAILS_PASSED"
+
+define subflow signal safe passage
+  bot signal input passed
+  stop
+
 # ── Dialog flows ──
 # Standard conversation patterns
 

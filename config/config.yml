@@ -38,6 +38,7 @@ rails:
       - check prompt injection
       - check sql injection
       - check all threats llm
+      - signal safe passage
 
 sample_conversation: |
   user "i has went to store yesterday"
