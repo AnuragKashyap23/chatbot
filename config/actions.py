@@ -146,8 +146,49 @@ PII_PATTERNS = [
 ]
 
 
-def mask_pii(text: str) -> tuple[str, list[str]]:
-    """Replace PII in text with asterisks. Returns (masked_text, list of labels found)."""
+NUMBER_WORD_MAP = {
+    "zero": "0", "oh": "0",
+    "one": "1", "two": "2", "three": "3", "four": "4", "five": "5",
+    "six": "6", "seven": "7", "eight": "8", "nine": "9",
+    "ten": "10", "eleven": "11", "twelve": "12", "thirteen": "13",
+    "fourteen": "14", "fifteen": "15", "sixteen": "16", "seventeen": "17",
+    "eighteen": "18", "nineteen": "19",
+    "twenty": "20", "thirty": "30", "forty": "40", "fifty": "50",
+    "sixty": "60", "seventy": "70", "eighty": "80", "ninety": "90",
+}
+
+
+def _normalize_number_words(text: str) -> str:
+    """Convert number words to digits and collapse consecutive digit runs.
+
+    'card number is 1245 one two three 5 eleven nine 1'
+    → 'card number is 124512351191'
+    """
+    tokens = text.split()
+    result = []
+    digit_buf: list[str] = []
+
+    def flush():
+        if digit_buf:
+            result.append("".join(digit_buf))
+            digit_buf.clear()
+
+    for token in tokens:
+        clean = re.sub(r"[^a-zA-Z0-9]", "", token).lower()
+        if clean in NUMBER_WORD_MAP:
+            digit_buf.append(NUMBER_WORD_MAP[clean])
+        elif clean.isdigit():
+            digit_buf.append(clean)
+        else:
+            flush()
+            result.append(token)
+
+    flush()
+    return " ".join(result)
+
+
+def _apply_pii_patterns(text: str) -> tuple[str, list[str]]:
+    """Run PII regex patterns on text and mask matches with asterisks."""
     masked = text
     found_labels = []
 
@@ -162,6 +203,26 @@ def mask_pii(text: str) -> tuple[str, list[str]]:
                 masked = masked[:match.start()] + stars + masked[match.end():]
 
     return masked, found_labels
+
+
+def mask_pii(text: str) -> tuple[str, list[str]]:
+    """Replace PII in text with asterisks.
+
+    Checks both the raw text and a number-word-normalized version
+    (e.g. 'one two three' → '123') so spoken-out numbers are caught too.
+    """
+    masked, labels = _apply_pii_patterns(text)
+
+    normalized = _normalize_number_words(text)
+    if normalized != text:
+        norm_masked, norm_labels = _apply_pii_patterns(normalized)
+        for lbl in norm_labels:
+            if lbl not in labels:
+                labels.append(lbl)
+        if norm_labels:
+            masked = norm_masked
+
+    return masked, labels
 
 
 # ── Actions registered with NeMo Guardrails ──

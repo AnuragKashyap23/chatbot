@@ -553,6 +553,7 @@
     <script>
         let sessionId = null;
         let currentAbortController = null;
+        let isResetting = false;
 
         function getTimestamp() {
             return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -635,6 +636,8 @@
                 currentAbortController.abort();
                 currentAbortController = null;
             }
+            hideTyping();
+            setLoadingState(false);
         }
 
         async function sendMessage() {
@@ -645,6 +648,7 @@
 
             input.value = '';
             input.style.height = 'auto';
+            isResetting = false;
 
             addMessage(message, 'user');
             showTyping();
@@ -663,38 +667,44 @@
                     signal: currentAbortController.signal,
                 });
 
-                hideTyping();
-
                 if (!response.ok) {
+                    hideTyping();
                     const err = await response.json();
                     addMessage(err.detail || 'Something went wrong. Please try again.', 'bot', true);
+                    setLoadingState(false);
                     return;
                 }
 
                 const data = await response.json();
+                hideTyping();
                 sessionId = data.session_id;
 
                 const isBlocked = data.response.includes("abusive") ||
                                   data.response.includes("manipulate") ||
                                   data.response.includes("SQL injection") ||
-                                  data.response.includes("security reasons");
+                                  data.response.includes("security reasons") ||
+                                  data.response.includes("sensitive personal information");
 
                 addMessage(data.response, 'bot', isBlocked);
+                setLoadingState(false);
 
             } catch (error) {
-                hideTyping();
                 if (error.name === 'AbortError') {
-                    addMessage('Request stopped.', 'bot', true);
+                    if (!isResetting) {
+                        addMessage('Request stopped by user.', 'bot', true);
+                    }
                 } else {
+                    hideTyping();
                     addMessage('Connection error. Make sure the server and Ollama are running.', 'bot', true);
+                    setLoadingState(false);
                 }
             } finally {
                 currentAbortController = null;
-                setLoadingState(false);
             }
         }
 
         async function resetChat() {
+            isResetting = true;
             stopRequest();
 
             if (sessionId) {

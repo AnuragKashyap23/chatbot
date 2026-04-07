@@ -110,6 +110,13 @@ async def chat(request: ChatRequest):
 
         bot_message = response.get("content", "I'm sorry, I couldn't process your request.")
 
+        # ── Output-side PII masking (safety net) ──
+        # If the LLM's response contains PII (e.g. it converted number
+        # words to digits), mask it before sending to the user.
+        out_masked, out_labels = mask_pii(bot_message)
+        if out_labels:
+            bot_message = out_masked
+
         sessions[session_id].append({
             "role": "assistant",
             "content": bot_message,
