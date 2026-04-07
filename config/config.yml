@@ -35,11 +35,9 @@ rails:
   input:
     flows:
       - check abusive language
-      - check abusive language llm
       - check prompt injection
-      - check prompt injection llm
       - check sql injection
-      - check sql injection llm
+      - check all threats llm
 
 sample_conversation: |
   user "i has went to store yesterday"

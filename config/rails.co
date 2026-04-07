@@ -37,7 +37,7 @@ define bot inform cannot use abusive words
   "I'm sorry, but I detected abusive or offensive language in your message. Please refrain from using such words. I'm here to help you in a respectful and constructive manner. Could you please rephrase your message?"
 
 define bot inform llm detected abusive words
-  "inappropriate words"
+  "Your message appears to contain inappropriate or offensive content. Please communicate respectfully."
 
 define bot inform prompt injection detected
   "I'm sorry, but your message appears to contain an attempt to manipulate my instructions. I cannot process this request. Please ask me a genuine question and I'll be happy to help!"
@@ -62,22 +62,10 @@ define subflow check abusive language
     bot inform cannot use abusive words
     stop
 
-define subflow check abusive language llm
-  $is_abusive_llm = execute check_abusive_llm
-  if $is_abusive_llm
-    bot inform llm detected abusive words
-    stop
-
 define subflow check prompt injection
   $is_injection = execute check_prompt_injection
   if $is_injection
     bot inform prompt injection detected
-    stop
-
-define subflow check prompt injection llm
-  $is_injection_llm = execute check_prompt_injection_llm
-  if $is_injection_llm
-    bot inform llm detected prompt injection
     stop
 
 define subflow check sql injection
@@ -86,9 +74,15 @@ define subflow check sql injection
     bot inform sql injection detected
     stop
 
-define subflow check sql injection llm
-  $is_sql_injection_llm = execute check_sql_injection_llm
-  if $is_sql_injection_llm
+define subflow check all threats llm
+  $llm_result = execute check_all_llm
+  if $llm_result.abusive
+    bot inform llm detected abusive words
+    stop
+  if $llm_result.prompt_injection
+    bot inform llm detected prompt injection
+    stop
+  if $llm_result.sql_injection
     bot inform llm detected sql injection
     stop
 

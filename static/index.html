@@ -239,6 +239,17 @@
             background: rgba(255, 107, 107, 0.08);
         }
 
+        .bubble.stream-bubble::after {
+            content: '\u258C';
+            animation: blink 0.8s infinite;
+            color: var(--primary-light);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
         .message-time {
             font-size: 0.65rem;
             color: var(--text-secondary);
@@ -583,6 +594,27 @@
             container.scrollTop = container.scrollHeight;
         }
 
+        function createStreamBubble() {
+            const welcome = document.getElementById('welcomeMessage');
+            if (welcome) welcome.style.display = 'none';
+
+            const container = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+
+            messageDiv.innerHTML = `
+                <div class="avatar bot-avatar">G</div>
+                <div>
+                    <div class="bubble stream-bubble"></div>
+                    <div class="message-time">${getTimestamp()}</div>
+                </div>
+            `;
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+            return messageDiv.querySelector('.stream-bubble');
+        }
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
@@ -640,6 +672,20 @@
             setLoadingState(false);
         }
 
+        function parseSSEEvents(text) {
+            const events = [];
+            const parts = text.split('\n\n');
+            for (const part of parts) {
+                const trimmed = part.trim();
+                if (trimmed.startsWith('data: ')) {
+                    try {
+                        events.push(JSON.parse(trimmed.slice(6)));
+                    } catch (e) {}
+                }
+            }
+            return events;
+        }
+
         async function sendMessage() {
             const input = document.getElementById('userInput');
             const message = input.value.trim();
@@ -655,6 +701,8 @@
             setLoadingState(true);
 
             currentAbortController = new AbortController();
+            let streamBubble = null;
+            let fullText = '';
 
             try {
                 const response = await fetch('/api/chat', {
@@ -675,17 +723,56 @@
                     return;
                 }
 
-                const data = await response.json();
-                hideTyping();
-                sessionId = data.session_id;
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
 
-                const isBlocked = data.response.includes("abusive") ||
-                                  data.response.includes("manipulate") ||
-                                  data.response.includes("SQL injection") ||
-                                  data.response.includes("security reasons") ||
-                                  data.response.includes("sensitive personal information");
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                addMessage(data.response, 'bot', isBlocked);
+                    buffer += decoder.decode(value, { stream: true });
+                    const parts = buffer.split('\n\n');
+                    buffer = parts.pop();
+
+                    for (const part of parts) {
+                        const trimmed = part.trim();
+                        if (!trimmed.startsWith('data: ')) continue;
+
+                        let data;
+                        try { data = JSON.parse(trimmed.slice(6)); }
+                        catch (e) { continue; }
+
+                        if (data.type === 'blocked') {
+                            hideTyping();
+                            sessionId = data.session_id;
+                            addMessage(data.content, 'bot', true);
+
+                        } else if (data.type === 'start') {
+                            hideTyping();
+                            sessionId = data.session_id;
+                            streamBubble = createStreamBubble();
+
+                        } else if (data.type === 'token' && streamBubble) {
+                            fullText += data.content;
+                            streamBubble.textContent = fullText;
+                            const container = document.getElementById('chatContainer');
+                            container.scrollTop = container.scrollHeight;
+
+                        } else if (data.type === 'replace' && streamBubble) {
+                            fullText = data.content;
+                            streamBubble.textContent = fullText;
+
+                        } else if (data.type === 'error') {
+                            hideTyping();
+                            addMessage(data.content, 'bot', true);
+
+                        } else if (data.type === 'done') {
+                            break;
+                        }
+                    }
+                }
+
                 setLoadingState(false);
 
             } catch (error) {
