@@ -4,27 +4,54 @@ import json
 import uuid
 import logging
 import uvicorn
-from typing import Optional
+from typing import Any, Optional
 
 import ollama
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel
+from langchain_core.messages import BaseMessage
+from langchain_ollama import ChatOllama
+from nemoguardrails import LLMRails, RailsConfig
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "config"))
-from actions import (
-    mask_pii,
-    check_abusive_words,
-    check_prompt_injection,
-    check_sql_injection,
-    COMBINED_MODERATION_PROMPT,
-)
+from actions import mask_pii
 
 log = logging.getLogger(__name__)
 
+GUARDRAILS_PASSED = "GUARDRAILS_PASSED"
+
+
+class NemoSafeChatOllama(ChatOllama):
+    """ChatOllama subclass that moves NeMo-injected kwargs into Ollama's options dict."""
+
+    def _chat_params(
+        self,
+        messages: list[BaseMessage],
+        stop: list[str] | None = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        temp_override = kwargs.pop("temperature", None)
+        kwargs.pop("streaming", None)
+        params = super()._chat_params(messages, stop, **kwargs)
+        if temp_override is not None and "options" in params:
+            params["options"]["temperature"] = temp_override
+        return params
+
+
 app = FastAPI(title="GuardBot - AI Chatbot with NeMo Guardrails")
 
+# ── NeMo Guardrails (input rails only) ──
+config = RailsConfig.from_path("./config")
+nemo_llm = NemoSafeChatOllama(
+    model="mistral",
+    base_url="http://localhost:11434",
+    num_predict=10,
+)
+rails = LLMRails(config, llm=nemo_llm)
+
+# ── Direct Ollama client (streaming rewrite) ──
 ollama_client = ollama.AsyncClient(host="http://localhost:11434")
 
 SYSTEM_PROMPT = (
@@ -37,33 +64,6 @@ SYSTEM_PROMPT = (
     "- Keep the output under 50 tokens unless the input itself exceeds 50 tokens."
 )
 
-BLOCK_MESSAGES = {
-    "abusive_regex": (
-        "I'm sorry, but I detected abusive or offensive language in your message. "
-        "Please refrain from using such words. Could you please rephrase your message?"
-    ),
-    "prompt_injection_regex": (
-        "I'm sorry, but your message appears to contain an attempt to manipulate "
-        "my instructions. I cannot process this request. Please ask a genuine question."
-    ),
-    "sql_injection_regex": (
-        "I'm sorry, but your message appears to contain potentially harmful code or "
-        "SQL injection patterns. I cannot process this request for security reasons."
-    ),
-    "abusive_llm": (
-        "Your message appears to contain inappropriate or offensive content. "
-        "Please communicate respectfully."
-    ),
-    "prompt_injection_llm": (
-        "Your message was flagged as an attempt to manipulate my instructions. "
-        "I cannot process this request. Please ask a genuine question."
-    ),
-    "sql_injection_llm": (
-        "Your message was flagged as containing a potential database attack pattern. "
-        "I cannot process this request for security reasons."
-    ),
-}
-
 sessions: dict[str, list[dict]] = {}
 
 
@@ -73,41 +73,7 @@ class ChatRequest(BaseModel):
 
 
 def _sse(data: dict) -> str:
-    """Format a dict as an SSE data line."""
     return f"data: {json.dumps(data)}\n\n"
-
-
-async def run_guardrails(message: str) -> str | None:
-    """Run all guardrail checks. Returns a block message key or None if safe."""
-    ctx = {"user_message": message}
-
-    if await check_abusive_words(context=ctx):
-        return "abusive_regex"
-    if await check_prompt_injection(context=ctx):
-        return "prompt_injection_regex"
-    if await check_sql_injection(context=ctx):
-        return "sql_injection_regex"
-
-    try:
-        prompt = COMBINED_MODERATION_PROMPT.format(message=message)
-        resp = await ollama_client.chat(
-            model="mistral",
-            messages=[{"role": "user", "content": prompt}],
-            options={"num_predict": 10},
-        )
-        raw = resp["message"]["content"].strip().lower().replace(" ", "")
-        parts = [p.strip() for p in raw.split(",")]
-
-        if len(parts) > 0 and parts[0].startswith("yes"):
-            return "abusive_llm"
-        if len(parts) > 1 and parts[1].startswith("yes"):
-            return "prompt_injection_llm"
-        if len(parts) > 2 and parts[2].startswith("yes"):
-            return "sql_injection_llm"
-    except Exception as e:
-        log.warning(f"LLM moderation failed, allowing through: {e}")
-
-    return None
 
 
 async def stream_rewrite(message: str, session_id: str):
@@ -153,7 +119,7 @@ async def stream_rewrite(message: str, session_id: str):
 async def chat(request: ChatRequest):
     session_id = request.session_id or str(uuid.uuid4())
 
-    # ── Step 0: PII masking ──
+    # ── Step 0: PII masking (pre-NeMo) ──
     masked_text, pii_labels = mask_pii(request.message)
     if pii_labels:
         bot_message = (
@@ -172,10 +138,21 @@ async def chat(request: ChatRequest):
 
         return StreamingResponse(pii_stream(), media_type="text/event-stream")
 
-    # ── Step 1: Guardrails (regex + 1 LLM call) ──
-    block_key = await run_guardrails(request.message)
-    if block_key:
-        bot_message = BLOCK_MESSAGES[block_key]
+    # ── Step 1: NeMo input rails (guardrail checks via rails.co) ──
+    # NeMo runs: regex checks → combined LLM moderation → signal safe passage
+    # If blocked → returns block message from rails.co
+    # If safe → returns "GUARDRAILS_PASSED" (our signal subflow)
+    try:
+        nemo_response = await rails.generate_async(
+            messages=[{"role": "user", "content": request.message}]
+        )
+        bot_message = nemo_response.get("content", "")
+    except Exception as e:
+        log.error(f"NeMo guardrails error: {e}")
+        bot_message = GUARDRAILS_PASSED
+
+    if bot_message != GUARDRAILS_PASSED:
+        # Blocked by a guardrail — return the block message
         sessions.setdefault(session_id, [])
         sessions[session_id].append({"role": "user", "content": request.message})
         sessions[session_id].append({"role": "assistant", "content": bot_message})
@@ -202,7 +179,7 @@ async def reset_session(session_id: Optional[str] = None):
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy", "model": "mistral (ollama)", "guardrails": "direct"}
+    return {"status": "healthy", "model": "mistral (ollama)", "guardrails": "nemo + streaming"}
 
 
 @app.get("/", response_class=HTMLResponse)
