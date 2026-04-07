@@ -1,5 +1,9 @@
-nemoguardrails
-fastapi
-uvicorn[standard]
-langchain-ollama
-aiohttp
+nemoguardrails==0.21.0
+fastapi==0.135.3
+uvicorn[standard]==0.43.0
+langchain-ollama==1.0.1
+langchain-core==1.2.26
+langchain==1.2.15
+aiohttp==3.13.5
+pydantic==2.12.5
+PyYAML==6.0.3
