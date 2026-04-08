@@ -67,14 +67,3 @@ define bot signal input passed
 define subflow signal safe passage
   bot signal input passed
   stop
-
-# ── Dialog flows ──
-# Standard conversation patterns
-
-define flow greeting
-  user express greeting
-  bot express greeting
-
-define flow help
-  user ask for help
-  bot provide help
