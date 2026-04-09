@@ -3,7 +3,7 @@ venv/
 env/
 ENV/
 
-__pycache__
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
@@ -11,3 +11,10 @@ __pycache__
 .env
 
 .vscode/
+.cursor/
+
+# Test cases, test results, and Excel sheets
+test_*.py
+test_*.txt
+*.xlsx
+~$*.xlsx
