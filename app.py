@@ -143,9 +143,6 @@ async def chat(request: ChatRequest):
         return StreamingResponse(pii_stream(), media_type="text/event-stream")
 
     # ── Step 1: NeMo input rails (guardrail checks via rails.co) ──
-    # NeMo runs: regex checks → combined LLM moderation → signal safe passage
-    # If blocked → returns block message from rails.co
-    # If safe → returns "GUARDRAILS_PASSED" (our signal subflow)
     try:
         nemo_response = await rails.generate_async(
             messages=[{"role": "user", "content": request.message}]
@@ -156,7 +153,6 @@ async def chat(request: ChatRequest):
         bot_message = GUARDRAILS_PASSED
 
     if bot_message != GUARDRAILS_PASSED:
-        # Blocked by a guardrail — return the block message
         sessions.setdefault(session_id, [])
         sessions[session_id].append({"role": "user", "content": request.message})
         sessions[session_id].append({"role": "assistant", "content": bot_message})

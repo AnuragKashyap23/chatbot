@@ -21,3 +21,7 @@ test_*.py
 test_*.txt
 *.xlsx
 ~$*.xlsx
+
+app_explanation.md
+*.txt
+!requirements.txt
