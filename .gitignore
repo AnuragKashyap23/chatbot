@@ -13,6 +13,9 @@ __pycache__/
 .vscode/
 .cursor/
 
+# ChromaDB persistent storage
+chroma_db/
+
 # Test cases, test results, and Excel sheets
 test_*.py
 test_*.txt

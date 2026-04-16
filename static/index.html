@@ -239,6 +239,41 @@
             background: rgba(255, 107, 107, 0.08);
         }
 
+        .bubble.faq-match {
+            border: 1px solid rgba(0, 206, 201, 0.4);
+            background: rgba(0, 206, 201, 0.06);
+        }
+
+        .faq-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+
+        .faq-badge.source-faq {
+            background: rgba(0, 206, 201, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 206, 201, 0.3);
+        }
+
+        .faq-badge.source-llm {
+            background: rgba(108, 92, 231, 0.15);
+            color: var(--primary-light);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+        }
+
+        .faq-matched-q {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 4px;
+            opacity: 0.85;
+        }
+
         .bubble.stream-bubble::after {
             content: '\258C';
             animation: blink 0.8s infinite;
@@ -505,26 +540,26 @@
         <div class="badge badge-shield">&#x1F6E1; Abusive Language Filter</div>
         <div class="badge badge-shield">&#x1F6E1; Prompt Injection Guard</div>
         <div class="badge badge-shield">&#x1F6E1; SQL Injection Guard</div>
-        <div class="badge badge-lang">&#x1F310; Hindi &#x2192; English Translation</div>
-        <div class="badge badge-grammar">&#x270F; Grammar Correction</div>
+        <div class="badge badge-lang">&#x1F4D6; FAQ Knowledge Base (RAG)</div>
+        <div class="badge badge-grammar">&#x270F; LLM Refinement</div>
     </div>
 
     <div class="chat-container" id="chatContainer">
         <div class="welcome-message" id="welcomeMessage">
             <h2>Welcome to GuardBot</h2>
-            <p>I'm your AI assistant powered by Mistral via Ollama, protected by NeMo Guardrails. I can help you with questions, correct grammar, and translate Hindi to English.</p>
+            <p>I'm your AI assistant powered by Mistral via Ollama, protected by NeMo Guardrails with an FAQ Knowledge Base. Ask me anything about SBI Card rewards, Encash, or NEFT payments!</p>
             <div class="feature-cards">
-                <div class="feature-card">
-                    <h4>&#x270F; Grammar Check</h4>
-                    <p>Type in English and I'll respond with proper grammar corrections</p>
-                </div>
-                <div class="feature-card">
-                    <h4>&#x1F310; Hindi Translation</h4>
-                    <p>Write in Hindi and I'll translate and respond in English</p>
-                </div>
                 <div class="feature-card">
                     <h4>&#x1F6E1; Safety Guardrails</h4>
                     <p>Protected against abusive language, prompt injection & SQL injection</p>
+                </div>
+                <div class="feature-card">
+                    <h4>&#x1F4D6; FAQ Knowledge Base</h4>
+                    <p>Instant answers from our FAQ database via vector similarity search</p>
+                </div>
+                <div class="feature-card">
+                    <h4>&#x270F; LLM Refinement</h4>
+                    <p>If no FAQ match, your query is refined by the LLM for a polished response</p>
                 </div>
             </div>
         </div>
@@ -594,6 +629,30 @@
             container.scrollTop = container.scrollHeight;
         }
 
+        function addFaqMessage(answer, matchedQuestion) {
+            const welcome = document.getElementById('welcomeMessage');
+            if (welcome) welcome.style.display = 'none';
+
+            const container = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+
+            messageDiv.innerHTML = `
+                <div class="avatar bot-avatar">G</div>
+                <div>
+                    <div class="bubble faq-match">
+                        <div class="faq-badge source-faq">FAQ MATCH</div>
+                        <div class="faq-matched-q">Matched: "${escapeHtml(matchedQuestion)}"</div>
+                        ${escapeHtml(answer)}
+                    </div>
+                    <div class="message-time">${getTimestamp()}</div>
+                </div>
+            `;
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
         function createStreamBubble() {
             const welcome = document.getElementById('welcomeMessage');
             if (welcome) welcome.style.display = 'none';
@@ -605,14 +664,17 @@
             messageDiv.innerHTML = `
                 <div class="avatar bot-avatar">G</div>
                 <div>
-                    <div class="bubble stream-bubble"></div>
+                    <div class="bubble stream-bubble">
+                        <div class="faq-badge source-llm">LLM REFINEMENT</div>
+                        <span class="stream-text"></span>
+                    </div>
                     <div class="message-time">${getTimestamp()}</div>
                 </div>
             `;
 
             container.appendChild(messageDiv);
             container.scrollTop = container.scrollHeight;
-            return messageDiv.querySelector('.stream-bubble');
+            return messageDiv.querySelector('.stream-text');
         }
 
         function escapeHtml(text) {
@@ -743,7 +805,12 @@
                         try { data = JSON.parse(trimmed.slice(6)); }
                         catch (e) { continue; }
 
-                        if (data.type === 'blocked') {
+                        if (data.type === 'faq_match') {
+                            hideTyping();
+                            sessionId = data.session_id;
+                            addFaqMessage(data.content, data.matched_question);
+
+                        } else if (data.type === 'blocked') {
                             hideTyping();
                             sessionId = data.session_id;
                             addMessage(data.content, 'bot', true);
@@ -809,19 +876,19 @@
             container.innerHTML = `
                 <div class="welcome-message" id="welcomeMessage">
                     <h2>Welcome to GuardBot</h2>
-                    <p>I'm your AI assistant powered by Mistral via Ollama, protected by NeMo Guardrails. I can help you with questions, correct grammar, and translate Hindi to English.</p>
+                    <p>I'm your AI assistant powered by Mistral via Ollama, protected by NeMo Guardrails with an FAQ Knowledge Base. Ask me anything about SBI Card rewards, Encash, or NEFT payments!</p>
                     <div class="feature-cards">
-                        <div class="feature-card">
-                            <h4>&#x270F; Grammar Check</h4>
-                            <p>Type in English and I'll respond with proper grammar corrections</p>
-                        </div>
-                        <div class="feature-card">
-                            <h4>&#x1F310; Hindi Translation</h4>
-                            <p>Write in Hindi and I'll translate and respond in English</p>
-                        </div>
                         <div class="feature-card">
                             <h4>&#x1F6E1; Safety Guardrails</h4>
                             <p>Protected against abusive language, prompt injection & SQL injection</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>&#x1F4D6; FAQ Knowledge Base</h4>
+                            <p>Instant answers from our FAQ database via vector similarity search</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>&#x270F; LLM Refinement</h4>
+                            <p>If no FAQ match, your query is refined by the LLM for a polished response</p>
                         </div>
                     </div>
                 </div>

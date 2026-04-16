@@ -1,0 +1,54 @@
+ID,Category,Sub-category,Tag,Scenario/Input,Expected Action/Output,Priority
+TC_RAG_001,Functional,Reward Redemption,RAG,"What are the charges for redeeming my reward points?",Bot fetches FAQ Q1: State ₹99 + taxes redemption fee and mentions the batch processing logic.,High
+TC_RAG_002,Functional,Reward Points,RAG,"Can I transfer my points to my brother's SBI card?",Bot fetches FAQ Q2: State that reward points cannot be added or transferred between card accounts.,Medium
+TC_RAG_003,Functional,Validity,RAG,"When will my reward points expire?",Bot fetches FAQ Q3: Explain the 24-month validity period from the date of accumulation.,High
+TC_RAG_004,Functional,Account Closure,RAG,"Can I use my points after I close my credit card?",Bot fetches FAQ Q4: Explain points can be redeemed within 30 days of voluntary closure.,High
+TC_RAG_005,Functional,Login Support,RAG,"Do I need a new password for the rewards portal?",Bot fetches FAQ Q5/Q6: Confirm existing SBI Card website credentials work for rewards too.,Low
+TC_RAG_006,Functional,Order Tracking,RAG,"How can I check the status of my gift voucher order?",Bot fetches FAQ Q7: Direct user to 'Track your Request' link or call the helpline.,Medium
+TC_RAG_007,Functional,Delivery,RAG,"Can I get my rewards delivered to my office address?",Bot fetches FAQ Q11: State items are delivered only to the registered primary address.,Medium
+TC_RAG_008,Functional,Order Modification,RAG,"I ordered the wrong item. Can I change it now?",Bot fetches FAQ Q10: State that items cannot be changed once the order is placed.,Low
+TC_RAG_009,Functional,Payment Options,RAG,"What is the Points + Pay option?",Bot fetches FAQ Q15: Explain the option to pay partly with points and partly with the card balance.,Medium
+TC_RAG_010,Functional,Dispute,RAG,"I received a damaged watch from the rewards catalogue.",Bot fetches FAQ Q16: Advise contacting within 3 working days and provides helpline.,High
+TC_RAG_011,Functional,Statement Credit,RAG,"Can I pay my credit card bill using reward points?",Bot fetches FAQ Q17: Confirm statement credit is possible in multiples of 2000 points (until April 2026).,High
+TC_RAG_012,Functional,Address Change,RAG,"How do I update my address for reward delivery?",Bot fetches FAQ Q8: Direct user to 'My Profile' link on the website or helpline.,Medium
+TC_RAG_013,Functional,Order Cancellation,RAG,"How do I cancel my redemption request?",Bot fetches FAQ Q9: State cancellation is only possible before 4:00 PM on the same day.,Medium
+TC_RAG_014,Functional,Delivery Failure,RAG,"What happens if no one is home to receive my reward?",Bot fetches FAQ Q12: Explain that points and fees will be credited back after failed attempts.,Low
+TC_RAG_015,Functional,Voucher Validity,RAG,"How long is my physical reward voucher valid for?",Bot fetches FAQ Q13: State validity is at least 3 months from the date of receipt.,Low
+TC_RAG_016,Refinement,Personal Details,REF,"I want to see my current reward point balance.",No FAQ Match: Trigger refinement to ask for User ID/OTP or redirect to Secure Login.,High
+TC_RAG_017,Refinement,Incomplete Query,REF,"Tell me about the points.",No Specific FAQ Match: Trigger refinement to ask "Are you asking about earning, redeeming, or expiry?",Medium
+TC_RAG_018,Refinement,Ambiguous Intent,REF,"Is it worth redeeming for a voucher?",No FAQ Match: Trigger refinement to ask for specific voucher type to provide value comparison.,Low
+TC_RAG_019,Functional,Dispute/LiveChat,RAG_LC,"I called the helpline for my damaged item but no one picked up.",FAQ fetched (Q16) + Handoff: Provide FAQ info then trigger LiveChat agent transfer.,High
+TC_RAG_020,Non-Functional,Hallucination,RAG_G,"Can I use my SBI reward points to buy Bitcoin?",No FAQ Match: Bot should NOT hallucinate. Trigger "Out of Scope" refinement message.,Medium
+
+
+
+TC_RAG_021,Functional,"What are the different ways to redeem my points?",Bot fetches FAQ Q1: State redemption via Website/App for vouchers or email/call for cash.,High
+TC_RAG_022,Functional,"How do I redeem my points using the SBI Card website?",Bot fetches FAQ Q2: Provides the 4-step login/browse/redeem process.,Medium
+TC_RAG_023,Functional,"Can I redeem rewards through the mobile app?",Bot fetches FAQ Q3: Explains the 'More > Rewards > Redeem' flow on the app.,Medium
+TC_RAG_024,Functional,"How can I convert my reward points into cash?",Bot fetches FAQ Q4: Advises writing to sbicard.com/email or calling the helpline.,High
+TC_RAG_025,Functional,"Is there a limit on cash redemption?",Bot fetches FAQ Q4: Mentions the 60k points/month cap and the 4000 point multiples rule.,High
+TC_RAG_026,Functional,"How long does it take to receive e-vouchers?",Bot fetches FAQ Q5: States e-vouchers are delivered within 5 calendar days.,Medium
+TC_RAG_027,Functional,"How long does it take for physical gifts to arrive?",Bot fetches FAQ Q5: States physical gifts are delivered within 15 calendar days.,Medium
+TC_RAG_028,Functional,"What exactly is the Encash facility?",Bot fetches FAQ Q1: Explains it is a pre-approved money-on-demand facility for select users.,High
+TC_RAG_029,Functional,"What is the minimum amount I can book for Encash?",Bot fetches FAQ Q2: States the minimum booking amount is Rs 25000.,Medium
+TC_RAG_030,Functional,"What is the maximum amount I can get through Encash?",Bot fetches FAQ Q2: Explains the maximum amount is based on the specific account offer.,Medium
+TC_RAG_031,Functional,"How can I check the interest rate for my Encash offer?",Bot fetches FAQ Q3: Directs user to login or call helpline to check pre-approved rates.,High
+TC_RAG_032,Functional,"Are there any processing fees for Encash?",Bot fetches FAQ Q4: Confirms a processing fee plus taxes is levied at the time of booking.,Medium
+TC_RAG_033,Functional,"What are the tenure options for Encash repayment?",Bot fetches FAQ Q5: Lists 12, 24, 36, or 48 months as available tenures.,Medium
+TC_RAG_034,Functional,"How will I receive the Encash money?",Bot fetches FAQ Q6: States funds are transferred to the savings bank account within 3-4 working days.,High
+TC_RAG_035,Functional,"When will my Encash installments start appearing?",Bot fetches FAQ Q7: Explains installments are billed in the monthly statement starting from the first cycle.,Medium
+TC_RAG_036,Functional,"Can I cancel my Encash request after booking?",Bot fetches FAQ Q8: Explains cancellation is only possible on the same day of the request.,High
+TC_RAG_037,Functional,"What is the charge for closing my Encash loan early?",Bot fetches FAQ Q8: States a 3% foreclosure fee on principal outstanding plus taxes.,High
+TC_RAG_038,Functional,"How is interest calculated for the first Encash EMI?",Bot fetches FAQ Q9: Explains calculation based on the days between Plan Open Date and Payment Due Date.,Low
+TC_RAG_039,Functional,"What is the NEFT service for SBI Card?",Bot fetches FAQ Q1: Explains it facilitates electronic fund transfer from any bank to pay SBI Card dues.,High
+TC_RAG_040,Functional,"Can I use NEFT from any bank branch?",Bot fetches FAQ Q2/Q3: States branch must be NEFT-enabled (around 220 banks) and directs to RBI site.,Medium
+TC_RAG_041,Functional,"What are the steps to pay SBI Card bill via NEFT?",Bot fetches FAQ Q5: Lists the 5-step process including adding SBI Card as a beneficiary.,High
+TC_RAG_042,Functional,"What is the IFSC code for SBI Card NEFT?",Bot fetches FAQ Q5/Q7: Explicitly states the IFSC code 'SBIN00CARDS'.,High
+TC_RAG_043,Functional,"What should I enter in the account number field for NEFT?",Bot fetches FAQ Q5: Explains the user must enter their 16-digit SBI Credit Card number.,High
+TC_RAG_044,Functional,"Is there a maximum limit for NEFT payments?",Bot fetches FAQ Q6: Confirms there is no limit on the amount transferred through NEFT.,Medium
+TC_RAG_045,Functional,"I used a wrong IFSC for NEFT. What should I do?",Bot fetches FAQ Q8: Advises contacting the respective branch to settle the matter mutually.,High
+TC_RAG_046,Functional,"How long does it take for NEFT payment to reflect?",Bot fetches FAQ Q9: States the payment amount is credited to the card account instantly.,High
+TC_RAG_047,Functional,"Does SBI Card charge a fee for NEFT payments?",Bot fetches FAQ Q10: States charges depend on the user's own bank; SBI Card doesn't apply uniform charges.,Medium
+TC_RAG_048,Refinement,"Is my account eligible for an Encash offer right now?",No FAQ Match: Trigger refinement to ask user to login or verify identity to check offer status.,High
+TC_RAG_049,Refinement,"Help me with my NEFT payment.",Partial Match: Trigger refinement to ask "Do you need the IFSC code or the steps to add a beneficiary?",Medium
+TC_RAG_050,Refinement,"I want to redeem points for a flight ticket.",Ambiguous: Trigger refinement to ask "Would you like to redeem via Air Miles or the Reward Catalogue?",Medium

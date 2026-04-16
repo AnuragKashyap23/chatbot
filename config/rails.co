@@ -16,9 +16,6 @@ define bot inform llm detected prompt injection
 define bot inform sql injection detected
   "I'm sorry, but your message appears to contain potentially harmful code or SQL injection patterns. I cannot process this request for security reasons. Please rephrase your message as a normal question."
 
-define bot inform llm detected sql injection
-  "Your message was flagged as containing a potential database attack pattern. I cannot process this request for security reasons. Please rephrase your message normally."
-
 # ── Input Rail Subflows ──
 # These are the actual guardrails executed by NeMo BEFORE the LLM.
 # 'execute' calls the @action Python functions in actions.py.
@@ -49,9 +46,6 @@ define subflow check all threats llm
     stop
   if $llm_result.prompt_injection
     bot inform llm detected prompt injection
-    stop
-  if $llm_result.sql_injection
-    bot inform llm detected sql injection
     stop
 
 # ── Safe passage signal ──

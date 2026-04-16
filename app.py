@@ -17,6 +17,7 @@ from nemoguardrails import LLMRails, RailsConfig
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "config"))
 from actions import mask_pii
+from rag import init_vectordb, search_faq
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +41,10 @@ class NemoSafeChatOllama(ChatOllama):
         return params
 
 
-app = FastAPI(title="GuardBot - AI Chatbot with NeMo Guardrails")
+app = FastAPI(title="GuardBot - AI Chatbot with NeMo Guardrails + RAG")
+
+# ── FAQ Vector DB (ChromaDB) ──
+init_vectordb()
 
 # ── NeMo Guardrails (input rails only) ──
 config = RailsConfig.from_path("./config")
@@ -163,7 +167,28 @@ async def chat(request: ChatRequest):
 
         return StreamingResponse(blocked_stream(), media_type="text/event-stream")
 
-    # ── Step 2: Stream rewrite directly from Ollama ──
+    # ── Step 2: RAG — check if query matches an FAQ ──
+    faq_result = search_faq(request.message)
+    if faq_result:
+        log.info(f"FAQ match (distance={faq_result['distance']}): {faq_result['question'][:60]}")
+
+        sessions.setdefault(session_id, [])
+        sessions[session_id].append({"role": "user", "content": request.message})
+        sessions[session_id].append({"role": "assistant", "content": faq_result["answer"]})
+
+        async def faq_stream():
+            yield _sse({
+                "type": "faq_match",
+                "content": faq_result["answer"],
+                "matched_question": faq_result["question"],
+                "distance": faq_result["distance"],
+                "session_id": session_id,
+            })
+            yield _sse({"type": "done"})
+
+        return StreamingResponse(faq_stream(), media_type="text/event-stream")
+
+    # ── Step 3: No FAQ match — stream LLM refinement from Ollama ──
     return StreamingResponse(
         stream_rewrite(request.message, session_id),
         media_type="text/event-stream",
@@ -179,7 +204,7 @@ async def reset_session(session_id: Optional[str] = None):
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy", "model": "mistral (ollama)", "guardrails": "nemo + streaming"}
+    return {"status": "healthy", "model": "mistral (ollama)", "guardrails": "nemo + RAG + streaming"}
 
 
 @app.get("/", response_class=HTMLResponse)

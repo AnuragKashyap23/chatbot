@@ -1,0 +1,192 @@
+[
+  {
+    "id": "faq_001",
+    "question": "What are the charges for redeeming my reward points?",
+    "answer": "A redemption fee of Rs. 99 plus applicable taxes is charged per redemption request. Redemption requests are processed in batches, so the fee covers the entire batch of items redeemed in a single request."
+  },
+  {
+    "id": "faq_002",
+    "question": "Can I transfer my reward points to another SBI card account?",
+    "answer": "No, reward points cannot be added to or transferred between SBI Card accounts. Each card's reward points are tied to that specific account and must be redeemed from the same account."
+  },
+  {
+    "id": "faq_003",
+    "question": "When will my reward points expire?",
+    "answer": "Reward points are valid for 24 months from the date of accumulation. Points that are older than 24 months will automatically expire and be removed from your balance."
+  },
+  {
+    "id": "faq_004",
+    "question": "Can I use my reward points after closing my credit card?",
+    "answer": "Yes, in case of voluntary card closure, you can redeem your accumulated reward points within 30 days of the closure date. After 30 days, any unredeemed points will be forfeited."
+  },
+  {
+    "id": "faq_005",
+    "question": "Do I need a separate login for the rewards portal?",
+    "answer": "No, you do not need a new password or separate credentials. You can use your existing SBI Card website login credentials to access the rewards portal."
+  },
+  {
+    "id": "faq_006",
+    "question": "How can I check the status of my reward order?",
+    "answer": "You can track the status of your redemption order by visiting the 'Track your Request' link on the SBI Card rewards website. Alternatively, you can call the SBI Card helpline for order status updates."
+  },
+  {
+    "id": "faq_007",
+    "question": "How do I update my address for reward delivery?",
+    "answer": "You can update your delivery address by visiting the 'My Profile' section on the SBI Card website and editing your registered address. Alternatively, you can call the SBI Card helpline for assistance with address changes."
+  },
+  {
+    "id": "faq_008",
+    "question": "Can I cancel my redemption request?",
+    "answer": "Yes, you can cancel your redemption request, but only before 4:00 PM on the same day the request was placed. After that cut-off time, the request cannot be cancelled or modified."
+  },
+  {
+    "id": "faq_009",
+    "question": "Can I change an item after placing a redemption order?",
+    "answer": "No, once a redemption order has been placed, the items in the order cannot be changed or swapped. Please make sure you select the correct item before confirming your redemption."
+  },
+  {
+    "id": "faq_010",
+    "question": "Can I get my rewards delivered to a different address like my office?",
+    "answer": "No, all reward items are delivered only to the registered primary address on your SBI Card account. Delivery to alternate addresses such as office or a friend's home is not supported."
+  },
+  {
+    "id": "faq_011",
+    "question": "What happens if no one is home to receive my reward delivery?",
+    "answer": "If the delivery fails after multiple attempts, the reward item will be returned. In such cases, the redeemed points along with the redemption fee will be credited back to your card account."
+  },
+  {
+    "id": "faq_012",
+    "question": "How long is my physical reward voucher valid for?",
+    "answer": "Physical reward vouchers are valid for a minimum of 3 months from the date of receipt. Please check the voucher for the exact expiry date printed on it and use it before that date."
+  },
+  {
+    "id": "faq_013",
+    "question": "What is the Points Plus Pay option?",
+    "answer": "Points Plus Pay is a flexible redemption option that allows you to pay for a reward item partly using your accumulated reward points and partly using your SBI Card balance. This way, you can redeem items even if you don't have enough points to cover the full cost."
+  },
+  {
+    "id": "faq_014",
+    "question": "I received a damaged item from the rewards catalogue. What should I do?",
+    "answer": "If you receive a damaged or defective item, please contact the SBI Card helpline within 3 working days of receiving the item. The team will arrange for a replacement or refund of your reward points."
+  },
+  {
+    "id": "faq_015",
+    "question": "Can I pay my credit card bill using reward points?",
+    "answer": "Yes, you can convert your reward points into a statement credit to pay your credit card bill. Statement credit redemption is available in multiples of 2,000 points. This facility is available until April 2026."
+  },
+  {
+    "id": "faq_016",
+    "question": "What are the different ways to redeem my reward points?",
+    "answer": "You can redeem your reward points through the SBI Card website or mobile app for gift vouchers, merchandise, and other catalogue items. For cash redemption, you can write to sbicard.com/email or call the SBI Card helpline."
+  },
+  {
+    "id": "faq_017",
+    "question": "How do I redeem my reward points using the SBI Card website?",
+    "answer": "To redeem on the website: (1) Log in to the SBI Card rewards portal using your SBI Card credentials, (2) Browse the rewards catalogue, (3) Select the item you wish to redeem, and (4) Confirm your redemption request."
+  },
+  {
+    "id": "faq_018",
+    "question": "Can I redeem reward points through the SBI Card mobile app?",
+    "answer": "Yes, you can redeem reward points through the SBI Card mobile app. Navigate to More > Rewards > Redeem to browse the catalogue and place your redemption request directly from the app."
+  },
+  {
+    "id": "faq_019",
+    "question": "How can I convert my reward points into cash?",
+    "answer": "To convert reward points into cash, you can write to the email address listed on sbicard.com or call the SBI Card helpline. Cash redemption is processed in multiples of 4,000 points with a maximum limit of 60,000 points per month."
+  },
+  {
+    "id": "faq_020",
+    "question": "How long does it take to receive e-vouchers after redemption?",
+    "answer": "E-vouchers are delivered electronically within 5 calendar days of placing the redemption request. You will receive the voucher details via email or SMS."
+  },
+  {
+    "id": "faq_021",
+    "question": "How long does it take to receive physical gifts after redemption?",
+    "answer": "Physical gifts are delivered to your registered address within 15 calendar days of placing the redemption request."
+  },
+  {
+    "id": "faq_022",
+    "question": "What is the Encash facility on SBI Card?",
+    "answer": "Encash is a pre-approved money-on-demand facility available to select SBI Card holders. It allows you to get instant funds transferred to your savings bank account, which you repay in easy monthly installments."
+  },
+  {
+    "id": "faq_023",
+    "question": "What is the minimum and maximum amount for Encash?",
+    "answer": "The minimum Encash booking amount is Rs. 25,000. The maximum amount depends on your specific pre-approved offer, which you can check by logging into your SBI Card account or calling the helpline."
+  },
+  {
+    "id": "faq_024",
+    "question": "How can I check the interest rate for my Encash offer?",
+    "answer": "You can check your pre-approved Encash interest rate by logging into your SBI Card account online or by calling the SBI Card helpline. Interest rates are personalized based on your card usage and credit profile."
+  },
+  {
+    "id": "faq_025",
+    "question": "Are there any processing fees for Encash?",
+    "answer": "Yes, a processing fee plus applicable taxes is charged at the time of booking the Encash facility. The exact fee amount will be displayed during the booking process."
+  },
+  {
+    "id": "faq_026",
+    "question": "What are the tenure options for Encash repayment?",
+    "answer": "Encash repayment is available in tenure options of 12, 24, 36, or 48 months. You can choose the tenure that best suits your repayment capacity at the time of booking."
+  },
+  {
+    "id": "faq_027",
+    "question": "How will I receive the Encash money?",
+    "answer": "The Encash amount is transferred directly to your registered savings bank account within 3 to 4 working days of booking the facility."
+  },
+  {
+    "id": "faq_028",
+    "question": "Can I cancel my Encash request after booking?",
+    "answer": "Cancellation of an Encash request is only possible on the same day the request was made. After that, the booking is final and cannot be cancelled."
+  },
+  {
+    "id": "faq_029",
+    "question": "What is the charge for closing my Encash loan early?",
+    "answer": "For early closure (foreclosure) of your Encash facility, a fee of 3% on the principal outstanding amount plus applicable taxes is charged."
+  },
+  {
+    "id": "faq_030",
+    "question": "What is the NEFT service for SBI Card?",
+    "answer": "NEFT (National Electronic Funds Transfer) for SBI Card allows you to pay your SBI Card dues by transferring funds electronically from any NEFT-enabled bank account to your SBI Card account."
+  },
+  {
+    "id": "faq_031",
+    "question": "Can I use NEFT from any bank to pay my SBI Card bill?",
+    "answer": "Yes, you can initiate an NEFT payment from any NEFT-enabled bank branch. Approximately 220 banks in India support NEFT. You can check whether your bank is NEFT-enabled on the RBI website."
+  },
+  {
+    "id": "faq_032",
+    "question": "What are the steps to pay my SBI Card bill via NEFT?",
+    "answer": "To pay via NEFT: (1) Log in to your bank's net banking, (2) Add SBI Card as a beneficiary with IFSC code SBIN00CARDS, (3) Enter your 16-digit SBI Credit Card number as the account number, (4) Enter the payment amount, and (5) Confirm the NEFT transfer."
+  },
+  {
+    "id": "faq_033",
+    "question": "What is the IFSC code for SBI Card NEFT payment?",
+    "answer": "The IFSC code for making NEFT payments to SBI Card is SBIN00CARDS. Please ensure you enter this code accurately when adding SBI Card as a beneficiary."
+  },
+  {
+    "id": "faq_034",
+    "question": "What should I enter as the account number for NEFT payment to SBI Card?",
+    "answer": "You need to enter your 16-digit SBI Credit Card number as the account number when setting up the NEFT transfer to pay your SBI Card dues."
+  },
+  {
+    "id": "faq_035",
+    "question": "Is there a maximum limit for NEFT payments to SBI Card?",
+    "answer": "No, there is no maximum limit on the amount that can be transferred via NEFT to pay your SBI Card dues. You can transfer any amount."
+  },
+  {
+    "id": "faq_036",
+    "question": "I used the wrong IFSC code for NEFT payment. What should I do?",
+    "answer": "If you used an incorrect IFSC code, the payment may go to the wrong account. Please contact your bank's branch immediately to resolve the matter. The branch will help settle the issue with the receiving bank."
+  },
+  {
+    "id": "faq_037",
+    "question": "How long does it take for an NEFT payment to reflect on my SBI Card?",
+    "answer": "NEFT payments to SBI Card are credited to your card account instantly once the transfer is processed by your bank."
+  },
+  {
+    "id": "faq_038",
+    "question": "Does SBI Card charge any fee for NEFT payments?",
+    "answer": "SBI Card does not apply a uniform charge for receiving NEFT payments. However, your bank may charge a fee for initiating the NEFT transfer. Please check with your bank for their NEFT charges."
+  }
+]
